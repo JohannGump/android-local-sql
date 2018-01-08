@@ -1,8 +1,9 @@
 package ja.fr.localsqlapp;
 
+import android.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteException;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,11 @@ public class FormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     public void onValid (View v){
@@ -25,7 +31,7 @@ public class FormActivity extends AppCompatActivity {
 
         //Récupéréation de la saisie de l'utilisateur
         String name = ((EditText) findViewById(R.id.editTextNom)).getText().toString();
-        String firstName =  ((EditText) findViewById(R.id.editTextNom)).getText().toString();
+        String firstName = ((EditText) findViewById(R.id.editTextPrenom)).getText().toString();
         String email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
 
         // Instanciation de la connexion à la base de données
@@ -41,6 +47,10 @@ public class FormActivity extends AppCompatActivity {
         try {
             db.getWritableDatabase().insert("contacts", null, insertValues);
             Toast.makeText(this, "Données enregistrées", Toast.LENGTH_LONG).show();
+            ((EditText) findViewById(R.id.editTextEmail)).setText("");
+            ((EditText) findViewById(R.id.editTextNom)).setText("");
+            ((EditText) findViewById(R.id.editTextPrenom)).setText("");
+
         } catch (SQLiteException ex){
             Log.e("SQL EXCEPTION", ex.getMessage());
         }

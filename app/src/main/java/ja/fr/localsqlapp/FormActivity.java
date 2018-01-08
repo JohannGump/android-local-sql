@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import fr.ja.database.DatabaseHandler;
+
 public class FormActivity extends AppCompatActivity {
 
     @Override
@@ -15,5 +17,6 @@ public class FormActivity extends AppCompatActivity {
 
     public void onValid (View v){
         Button clickedButton = (Button) v; //je caste ma vue en bouton
+        DatabaseHandler db = new DatabaseHandler(this);
     }
 }

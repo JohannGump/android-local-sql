@@ -68,14 +68,44 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 this.deleteSelectedContact();
                 break;
             case R.id.mainMenuOptionEdit:
+                this.editSelectedContact();
                 break;
         }
 
         return true;
     }
 
-    // suppression contact sléectionné
+    // Edition d'un contact sélectionné
+    private void editSelectedContact(){
+        if (this.selectedIndex != null) {
 
+            //création d'une intention
+            Intent intention = new Intent(this, FormActivity.class);
+
+            // Passage des paramètres à l'intention
+            intention.putExtra("id", this.selectedPerson.get("id"));
+            intention.putExtra("name", this.selectedPerson.get("name"));
+            intention.putExtra("first_name", this.selectedPerson.get("first_name"));
+            intention.putExtra("email", this.selectedPerson.get("email"));
+
+            //lancement de l'activité FOrmActivity
+            startActivityForResult(intention,1);
+
+        }
+
+
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data){
+        if(requestCode ==1 && resultCode == RESULT_OK){
+            Toast.makeText(this,"Mise à jour effectuée", Toast.LENGTH_LONG).show();
+            //Réinitialisation de la liste
+            this.contactListInit();
+        }
+    }
+
+    // suppression contact sélectionné
     private void deleteSelectedContact(){
         if(this.selectedIndex != null){
 
@@ -85,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String[] params = {this.selectedPerson.get("id")};
                 DatabaseHandler db = new DatabaseHandler(this);
                 db.getWritableDatabase().execSQL(sql, params);
+
                 //Réinitialisation de la liste des contacts
                 contactListInit();
             } catch (SQLiteException ex) {

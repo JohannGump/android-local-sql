@@ -37,6 +37,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Reference au widget ListView sur le layout
         contactListView = findViewById(R.id.contactListView);
         contactListInit();
+
+        //Récupération des données persistantes dans la Bundle
+        if (savedInstanceState != null){
+            this.selectedIndex = savedInstanceState.getInt("selectedIndex");
+            if(this.selectedIndex != null){
+                contactListView.requestFocusFromTouch();
+                this.selectedPerson = this.contactList.get(this.selectedIndex);
+                contactListView.setSelection(this.selectedIndex);
+            }
+        }
     }
 
     private void contactListInit() {
@@ -208,5 +218,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         super.onDestroy();
         Log.i(LIFE_CYCLE,"onDestroy");
+    }
+
+    /*persistance des données vant destruction de l'activité'
+    /* @param
+    */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("selectedIndex", this.selectedIndex);
+        super.onSaveInstanceState(outState);
+
     }
 }

@@ -18,7 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.ja.database.ContactDAO;
 import fr.ja.database.DatabaseHandler;
+import ja.fr.localsqlapp.model.Contact;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         contactListView = findViewById(R.id.contactListView);
         contactListInit();
 
+        this.testDAO();
+
         //Récupération des données persistantes dans la Bundle
         if (savedInstanceState != null){
             this.selectedIndex = savedInstanceState.getInt("selectedIndex");
@@ -48,6 +52,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     }
+
+    private void testDAO(){
+       try {
+           ContactDAO dao = new ContactDAO(new DatabaseHandler(this));
+           Contact contact = dao.findOneById((long) 1);
+           if(contact.getName()==null){
+               Log.i("DAO", "contact inconnu");
+           }else {
+               Log.i("DAO", contact.getName());
+           }
+
+       } catch (SQLiteException ex){
+           Log.i("DEBUG", ex.getMessage());
+       }
+    }
+
 
     private void contactListInit() {
         //Récupération de la list des contacts

@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         contactListView = findViewById(R.id.contactListView);
         contactListInit();
 
-        this.testDAO();
 
         //Récupération des données persistantes dans le Bundle
         if (savedInstanceState != null){
@@ -59,21 +58,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 contactListView.setSelection(this.selectedIndex);
             }
         }
-    }
-
-    private void testDAO(){
-       try {
-           ContactDAO dao = new ContactDAO(new DatabaseHandler(this));
-           Contact contact = dao.findOneById((long) 1);
-           if(contact.getName()==null){
-               Log.i("DAO", "contact inconnu");
-           }else {
-               Log.i("DAO", contact.getName());
-           }
-
-       } catch (SQLiteException ex){
-           Log.i("DEBUG", ex.getMessage());
-       }
     }
 
 
@@ -176,33 +160,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private List<Map<String,String>> getAllContacts(){
-
-        //Instanciation de la connexion à la base données
-        DatabaseHandler db = new DatabaseHandler(this);
-
-        //Exécution de la requête de sélection
-        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT name, first_name, email, id FROM contacts", null);
-
-        //Instanciation de la liste qui recevra les données
-        List<Map<String,String>> contactList = new ArrayList<>();
-
-        //Parcourir les résultats de la requête - parcours du curseur
-        while(cursor.moveToNext()){
-            Map<String, String> contactCols = new HashMap<>(); // pour ne pas avoir la même ligne répétée
-            contactCols.put("name",cursor.getString(0));
-            contactCols.put("first_name",cursor.getString(1));
-            contactCols.put("email",cursor.getString(2));
-            contactCols.put("id",cursor.getString(3));
-
-        //Ajout de la map à la liste
-        contactList.add(contactCols);
-
-
-        }
-
-        return contactList;
-    }
 
 
     @Override

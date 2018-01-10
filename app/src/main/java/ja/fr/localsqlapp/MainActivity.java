@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     /*persistance des données vant destruction de l'activité'
-    /* @param
+    /*
     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {

@@ -3,6 +3,9 @@ package fr.ja.database;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ja.fr.localsqlapp.model.Contact;
 
 public class ContactDAO {
@@ -12,9 +15,9 @@ public class ContactDAO {
     public ContactDAO(DatabaseHandler db) {
         this.db = db;
     }
-    /*Récupération d'un contact ne fionction de sa clé primaire
+    /*Récupération d'un contact en fonction de sa clé primaire
     *@param id
-    *@retrun
+    *@return
     */
 
     public Contact findOneById(Long id) throws SQLiteException {
@@ -27,10 +30,7 @@ public class ContactDAO {
 
         //Hydratation du contact
         if(cursor.moveToNext()){
-            contact.setId(cursor.getLong(0));
-            contact.setName(cursor.getString(1));
-            contact.setFirstName(cursor.getString(2));
-            contact.setEmail(cursor.getString(1));
+          contact =  hydrateContact(cursor);
         }
 
         //Fermeture du curseur
@@ -38,4 +38,38 @@ public class ContactDAO {
 
         return contact;
     }
+
+    private Contact hydrateContact(Cursor cursor) {
+        Contact contact = new Contact();
+        contact.setId(cursor.getLong(0));
+        contact.setName(cursor.getString(1));
+        contact.setFirstName(cursor.getString(2));
+        contact.setEmail(cursor.getString(3));
+
+        return contact;
+    }
+
+    /**
+     *  @return List<Contact> une liste de contacts
+     */
+
+    public List<Contact> findAll() throws SQLiteException {
+        //Instanciation de la liste des contacts
+        List<Contact> contactList = new ArrayList<>();
+
+        //Exécution de la requête sql
+        String sql = "SELECT id, name, first_name, email FROM contacts";
+        Cursor cursor = this.db.getReadableDatabase().rawQuery(sql, null);
+
+        //Boucle sur le curseur
+        while (cursor.moveToNext()) {
+            contactList.add(this.hydrateContact(cursor));
+        }
+
+        //Fermueture du curseur
+        cursor.close();
+
+        return contactList;
+    }
+
 }

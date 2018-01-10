@@ -25,10 +25,13 @@ import ja.fr.localsqlapp.model.Contact;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private ListView contactListView;
-    private List<Map<String,String>> contactList;
+    private List<Contact> contactList;
     private Integer selectedIndex;
-    private Map<String,String> selectedPerson;
+    private Contact selectedPerson;
     private final String LIFE_CYCLE = "cycle de vie";
+
+    private DatabaseHandler db;
+    private ContactDAO dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +39,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Instanciation de la connexion à l abase de données
+        this.db = new DatabaseHandler(this);
+        //Instanciation du DAO pour les contacts
+        this.dao = new ContactDAO(this.db);
+
         // Reference au widget ListView sur le layout
         contactListView = findViewById(R.id.contactListView);
         contactListInit();
 
         this.testDAO();
 
-        //Récupération des données persistantes dans la Bundle
+        //Récupération des données persistantes dans le Bundle
         if (savedInstanceState != null){
             this.selectedIndex = savedInstanceState.getInt("selectedIndex");
             if(this.selectedIndex != null){
@@ -71,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void contactListInit() {
         //Récupération de la list des contacts
-        contactList = this.getAllContacts();
+        contactList = this.dao.findAll();
 
         //Création d'un contactArrayAdapter
         ContactArrayAdapter contactAdapter = new ContactArrayAdapter(this, contactList);
@@ -116,10 +124,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Intent intention = new Intent(this, FormActivity.class);
 
             // Passage des paramètres à l'intention
-            intention.putExtra("id", this.selectedPerson.get("id"));
-            intention.putExtra("name", this.selectedPerson.get("name"));
-            intention.putExtra("first_name", this.selectedPerson.get("first_name"));
-            intention.putExtra("email", this.selectedPerson.get("email"));
+            intention.putExtra("id", String.valueOf(this.selectedPerson.getId()));
+            intention.putExtra("name", this.selectedPerson.getName());
+            intention.putExtra("first_name", this.selectedPerson.getFirstName());
+            intention.putExtra("email", this.selectedPerson.getEmail());
 
             //lancement de l'activité FOrmActivity
             startActivityForResult(intention,1);
@@ -145,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             try {
                 // Définition de la requête sql et des paramètres
                 String sql = "DELETE FROM contacts WHERE id=?";
-                String[] params = {this.selectedPerson.get("id")};
+                String[] params = {String.valueOf(this.selectedPerson.getId())};
                 DatabaseHandler db = new DatabaseHandler(this);
                 db.getWritableDatabase().execSQL(sql, params);
 
@@ -189,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //Ajout de la map à la liste
         contactList.add(contactCols);
+
 
         }
 
@@ -245,7 +254,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("selectedIndex", this.selectedIndex);
+        if(this.selectedIndex != null){
+            outState.putInt("selectedIndex", this.selectedIndex);
+        }
+
         super.onSaveInstanceState(outState);
 
     }

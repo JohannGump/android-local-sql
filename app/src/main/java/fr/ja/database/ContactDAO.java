@@ -9,7 +9,7 @@ import java.util.List;
 
 import ja.fr.localsqlapp.model.Contact;
 
-public class ContactDAO {
+public class ContactDAO implements DAOInterface <Contact> {
 
     private DatabaseHandler db;
 
@@ -21,6 +21,7 @@ public class ContactDAO {
     *@return
     */
 
+    @Override
     public Contact findOneById(Long id) throws SQLiteException {
         //Exécution de la requête
         String[] params = {String.valueOf(id)};
@@ -54,6 +55,7 @@ public class ContactDAO {
      *  @return List<Contact> une liste de contacts
      */
 
+    @Override
     public List<Contact> findAll() throws SQLiteException {
         //Instanciation de la liste des contacts
         List<Contact> contactList = new ArrayList<>();
@@ -78,13 +80,15 @@ public class ContactDAO {
     *
     */
 
+    @Override
     public void deleteOneById(Long id) throws SQLiteException {
         String[] params = {id.toString()};
         String sql = "DELETE FROM contacts WHERE id=?";
         this.db.getWritableDatabase().execSQL(sql,params);
     }
 
-    public void persist (Contact entity){
+    @Override
+    public void persist(Contact entity){
         if (entity.getId()== null){
             this.insert(entity);
         }else{
